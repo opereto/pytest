@@ -1,0 +1,34 @@
+{
+    "id": "opereto-pytest-services",
+    "globals": [
+
+    ],
+    "services": {
+
+        "opereto_pytest_results_parser": {
+            "source_dir": "opereto_pytest_results_parser",
+            "info": {
+              "summary": "Parses pytest generated xml and output files and generates Opereto listener results directory."
+            }
+        }
+    },
+    "additional_info": {
+        "license": "Apache License 2.0",
+        "resources": [
+            {
+                "name": "Learn more about pytest",
+                "url": "https://docs.pytest.org/en/latest/"
+            }
+        ]
+    },
+    "repository": {},
+    "name": "Opereto PyTest Services",
+    "summary": "This package contains pytest wrapping services such as pytest results parser. ",
+    "description": "PyTest is a mature full-featured Python testing tool that helps you write better programs. This package contains Opereto pytest parser service allowing to convert pytest results into Opereto test results structure as used by the standard Opereto test listener service.",
+    "version": "1.0.3",
+    "provider": "Opereto LTD",
+    "category": "Test & Automation Tools",
+    "provider_url": "http://www.opereto.com",
+    "web_url": "https://github.com/opereto/pytest",
+    "large_icon": "opereto_pytest.png"
+}

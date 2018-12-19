@@ -1,0 +1,21 @@
+cmd:
+  type: python-venv
+  command:
+    default: python -u run.py
+  path:
+    default: ~/.opereto/operetovenv
+item_properties:
+-   key: parser_directory_path
+    value:
+    type: text
+    direction: input
+    mandatory: true
+    help: Path to the pytest results directory
+-   key: listener_directory_path
+    value:
+    type: text
+    direction: input
+    mandatory: true
+    help: Path to the Opereto listener results directory
+timeout: 10000000
+type: action
