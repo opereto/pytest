@@ -11,6 +11,12 @@ item_properties:
     direction: input
     mandatory: true
     help: Path to the pytest results directory
+-   key: results_xml_file
+    value: results.xml
+    type: text
+    direction: input
+    mandatory: true
+    help: The results XML file name
 -   key: listener_directory_path
     value:
     type: text
