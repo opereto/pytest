@@ -2,7 +2,7 @@ from opereto.helpers.services import ServiceTemplate
 from opereto.helpers.parsers import JunitToOperetoResults
 from opereto.utils.validations import JsonSchemeValidator, validate_dict
 from pyopereto.client import OperetoClient
-import time
+import time, os
 
 class ServiceRunner(ServiceTemplate):
 
@@ -34,11 +34,12 @@ class ServiceRunner(ServiceTemplate):
         validator.validate()
 
     def process(self):
-        parser = JunitToOperetoResults(source_path=self.input['parser_directory_path'], dest_path=self.input['listener_directory_path'])
+        parser = JunitToOperetoResults(source_path=self.xunit_results_file, dest_path=self.input['listener_directory_path'])
         while(True):
-            parser.parse()
-            if 'test_suite' in parser.tests:
-                break
+            if os.path.exists(self.xunit_results_file):
+                parser.parse()
+                if 'test_suite' in parser.tests:
+                    break
             time.sleep(20)
 
         self._print_step_title('Stopped opereto pytest results parser')
@@ -47,7 +48,7 @@ class ServiceRunner(ServiceTemplate):
         return self.client.SUCCESS
 
     def setup(self):
-        pass
+        self.xunit_results_file = os.path.join(self.input['parser_directory_path'], self.input['results_xml_file'])
 
     def teardown(self):
         pass
