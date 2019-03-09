@@ -16,7 +16,14 @@ item_properties:
     type: text
     direction: input
     mandatory: true
-    help: The results XML file name
+    help: The results XML file name (can be rexexp too, e.g. test_output_*.xml)
+-   key: parser_frequency
+    type: integer
+    value: 10
+    editor: number
+    mandatory: true
+    direction: input
+    help: The listener frequency tracking the test results directory for changes
 -   key: listener_directory_path
     value:
     type: text
