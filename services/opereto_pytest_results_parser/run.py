@@ -2,15 +2,16 @@ from opereto.helpers.services import ServiceTemplate
 from opereto.helpers.parsers import JunitToOperetoResults
 from opereto.utils.validations import JsonSchemeValidator, validate_dict
 from pyopereto.client import OperetoClient
-import time, os, fnmatch
+import time, os, re
 
 class ServiceRunner(ServiceTemplate):
 
     def __init__(self, **kwargs):
         self.client = OperetoClient()
         ServiceTemplate.__init__(self, **kwargs)
-        self._print_step_title('Start opereto pytest results parser..')
-
+        self.op_state = {}
+        if os.path.exists(self.state_file):
+            self.op_state = self._get_state()
 
     def validate_input(self):
 
@@ -43,39 +44,57 @@ class ServiceRunner(ServiceTemplate):
 
     def process(self):
         file_found=False
+        self._print_step_title('Waiting for result file..')
+        rx = re.compile(self.input['results_xml_file'])
+        sleep_interval=1
         while(True):
             if os.path.exists(self.input['parser_directory_path']):
+                if self.debug_mode:
+                    print 'Content of parser directory:'
                 for file in os.listdir(self.input['parser_directory_path']):
-                    if fnmatch.fnmatch(file, self.input['results_xml_file']):
+                    if self.debug_mode:
+                        print file
+                    if rx.match(file):
                         self.xunit_results_file = os.path.join(self.input['parser_directory_path'], file)
+                        self.op_state['xunit_results_file']=self.xunit_results_file
+                        self._save_state(self.op_state)
                         print 'Results XML file found: {}'.format(self.xunit_results_file)
                         file_found=True
                         break
+            else:
+                print 'Results directory [{}] not found..'.format(self.input['parser_directory_path'])
             if file_found:
                 break
-            time.sleep(1)
+            time.sleep(sleep_interval)
+            if sleep_interval<10:
+                sleep_interval+=1
 
         parser = JunitToOperetoResults(source_path=self.xunit_results_file, dest_path=self.input['listener_directory_path'])
         print 'Start tracking for results modifications..'
         while(True):
             if os.path.exists(self.xunit_results_file):
+                if self.debug_mode:
+                    with open(self.xunit_results_file, 'r') as result_file:
+                        print result_file.read()
                 parser.parse()
-                if 'test_suite' in parser.tests:
-                    break
             time.sleep(self.input['parser_frequency'])
-
-        self._print_step_title('Stopped opereto pytest results parser')
-        print 'Results are ready at: {}'.format(self.input['listener_directory_path'])
 
         return self.client.SUCCESS
 
     def setup(self):
         self.xunit_results_file=None
-
+        self.debug_mode = self.input['debug_mode']
+        self._print_step_title('Start opereto pytest results parser..')
 
     def teardown(self):
-        pass
-
+        try:
+            if 'xunit_results_file' in self.op_state:
+                if os.path.exists(self.op_state['xunit_results_file']):
+                    with open(self.op_state['xunit_results_file'], 'r') as result_file:
+                        print 'Final content of pytest results file: {}'.format(result_file.read())
+                del self.op_state['xunit_results_file']
+        finally:
+            self._save_state(self.op_state)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,12 @@ cmd:
     default: python -u run.py
   path:
     default: ~/.opereto/operetovenv
+termination_cmd:
+  type: python-venv
+  command:
+    default: python -u kill.py
+  path:
+    default: ~/.opereto/operetovenv
 item_properties:
 -   key: parser_directory_path
     value:
@@ -30,5 +36,12 @@ item_properties:
     direction: input
     mandatory: true
     help: Path to the Opereto listener results directory
+-   key: debug_mode
+    value: false
+    type: boolean
+    direction: input
+    mandatory: true
+    help: If checked, the parser will print debug info
+
 timeout: 10000000
 type: action
