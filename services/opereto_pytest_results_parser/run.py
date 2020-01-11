@@ -44,25 +44,21 @@ class ServiceRunner(ServiceTemplate):
 
     def process(self):
         file_found=False
-        self._print_step_title('Waiting for result file..')
+        self._print_step_title('Waiting for result directory..')
         rx = re.compile(self.input['results_xml_file'])
         sleep_interval=1
         while(True):
             if os.path.exists(self.input['parser_directory_path']):
-                if self.debug_mode:
-                    print 'Content of parser directory:'
                 for file in os.listdir(self.input['parser_directory_path']):
-                    if self.debug_mode:
-                        print file
                     if rx.match(file):
                         self.xunit_results_file = os.path.join(self.input['parser_directory_path'], file)
                         self.op_state['xunit_results_file']=self.xunit_results_file
                         self._save_state(self.op_state)
                         print 'Results XML file found: {}'.format(self.xunit_results_file)
+                        if self.debug_mode:
+                            self._print_results_file(self.xunit_results_file)
                         file_found=True
                         break
-            else:
-                print 'Results directory [{}] not found..'.format(self.input['parser_directory_path'])
             if file_found:
                 break
             time.sleep(sleep_interval)
@@ -73,13 +69,14 @@ class ServiceRunner(ServiceTemplate):
         print 'Start tracking for results modifications..'
         while(True):
             if os.path.exists(self.xunit_results_file):
-                if self.debug_mode:
-                    with open(self.xunit_results_file, 'r') as result_file:
-                        print result_file.read()
-                parser.parse()
+                parser.parse(self.debug_mode)
             time.sleep(self.input['parser_frequency'])
 
         return self.client.SUCCESS
+
+    def _print_results_file(self, file):
+        with open(file, 'r') as result_file:
+            print 'Content of pytest results file: {}'.format(result_file.read())
 
     def setup(self):
         self.xunit_results_file=None
@@ -87,14 +84,9 @@ class ServiceRunner(ServiceTemplate):
         self._print_step_title('Start opereto pytest results parser..')
 
     def teardown(self):
-        try:
-            if 'xunit_results_file' in self.op_state:
-                if os.path.exists(self.op_state['xunit_results_file']):
-                    with open(self.op_state['xunit_results_file'], 'r') as result_file:
-                        print 'Final content of pytest results file: {}'.format(result_file.read())
-                del self.op_state['xunit_results_file']
-        finally:
-            self._save_state(self.op_state)
+        if 'xunit_results_file' in self.op_state:
+            if os.path.exists(self.op_state['xunit_results_file']):
+                self._print_results_file(self.op_state['xunit_results_file'])
 
 
 if __name__ == "__main__":
