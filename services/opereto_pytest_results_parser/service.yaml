@@ -25,7 +25,7 @@ item_properties:
     help: The results XML file name (can be rexexp too, e.g. test_output_*.xml)
 -   key: parser_frequency
     type: integer
-    value: 10
+    value: 5
     editor: number
     mandatory: true
     direction: input

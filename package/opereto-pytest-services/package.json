@@ -25,7 +25,7 @@
     "name": "Opereto PyTest Services",
     "summary": "This package contains pytest wrapping services such as pytest results parser. ",
     "description": "PyTest is a mature full-featured Python testing tool that helps you write better programs. This package contains Opereto pytest parser service allowing to convert pytest results into Opereto test results structure as used by the standard Opereto test listener service.",
-    "version": "1.0.18",
+    "version": "1.0.21",
     "provider": "Opereto LTD",
     "category": "Test & Automation Tools",
     "provider_url": "http://www.opereto.com",
