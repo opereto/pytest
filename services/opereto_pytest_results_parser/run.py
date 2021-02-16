@@ -54,7 +54,7 @@ class ServiceRunner(ServiceTemplate):
                         self.xunit_results_file = os.path.join(self.input['parser_directory_path'], file)
                         self.op_state['xunit_results_file']=self.xunit_results_file
                         self._save_state(self.op_state)
-                        print 'Results XML file found: {}'.format(self.xunit_results_file)
+                        print('Results XML file found: {}'.format(self.xunit_results_file))
                         if self.debug_mode:
                             self._print_results_file(self.xunit_results_file)
                         file_found=True
@@ -66,7 +66,7 @@ class ServiceRunner(ServiceTemplate):
                 sleep_interval+=1
 
         parser = JunitToOperetoResults(source_path=self.xunit_results_file, dest_path=self.input['listener_directory_path'])
-        print 'Start tracking for results modifications..'
+        print('Start tracking for results modifications..')
         while(True):
             if os.path.exists(self.xunit_results_file):
                 parser.parse(self.debug_mode)
@@ -76,7 +76,7 @@ class ServiceRunner(ServiceTemplate):
 
     def _print_results_file(self, file):
         with open(file, 'r') as result_file:
-            print 'Content of pytest results file: {}'.format(result_file.read())
+            print('Content of pytest results file: {}'.format(result_file.read()))
 
     def setup(self):
         self.xunit_results_file=None
