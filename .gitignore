@@ -12,3 +12,4 @@ target/*
 opereto.yaml
 arguments.yaml
 arguments.json
+.pytest_cache/
